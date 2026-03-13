@@ -102,16 +102,3 @@ El sistema sigue un modelo relacional para garantizar la integridad de la inform
 
 ## 5. Instalación y Ejecución
 Para clonar y ejecutar este proyecto localmente:
-
-```bash
-# Clonar el repositorio
-git clone [https://github.com/tu-usuario/nombre-del-proyecto.git](https://github.com/tu-usuario/nombre-del-proyecto.git)
-
-# Entrar al directorio
-cd nombre-del-proyecto
-
-# Instalar dependencias (si aplica)
-pip install -r requirements.txt
-
-# Ejecutar la aplicación
-python src/main.py
