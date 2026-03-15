@@ -1,4 +1,158 @@
-Finance Tracker
+# Finance Tracker API
+
+A personal finance management REST API built as a portfolio project. Allows users to manage accounts, track income and expenses, and categorize transactions.
+
+---
+
+## Stack
+
+| Layer | Technology |
+|---|---|
+| Language | Python 3.11 |
+| Framework | FastAPI |
+| ORM | SQLAlchemy |
+| Migrations | Alembic |
+| Database | PostgreSQL |
+| Auth | JWT (python-jose) |
+| Validation | Pydantic v2 |
+| Server | Uvicorn |
+
+---
+
+## Architecture
+
+The project follows a layered architecture with clear separation of concerns:
+
+```
+backend/
+    app/
+        api/          # Route handlers — receives requests, returns responses
+        models/       # SQLAlchemy models — maps Python classes to DB tables
+        schemas/      # Pydantic schemas — validates input and output data
+        services/     # Business logic — rules that don't belong in routes or models
+        core/         # Central config — database connection, environment variables
+    tests/
+```
+
+Each layer has a single responsibility and only communicates with the adjacent layer. `api/` never touches `models/` directly — it always goes through `services/`.
+
+---
+
+## Data Model
+
+> DER — pending (to be added after entity design session)
+
+### Entities
+
+**User**
+- id, email, password_hash, created_at
+
+**Account**
+- id, user_id (FK), name
+
+**Category**
+- id, user_id (FK), name, description
+
+**Transaction**
+- id, account_id (FK), category_id (FK), amount, type (ENUM: income/expense), description, date
+
+### Relationships
+
+```
+User     1:N  Account
+User     1:N  Category
+Account  1:N  Transaction
+Category 1:N  Transaction
+```
+
+### Design decisions
+
+- **No balance column on Account**: balance is derived by summing transactions. Storing it separately risks inconsistency if a bug skips the update.
+- **Transaction type as ENUM**: avoids inconsistent string values like `"gasto"`, `"Gasto"`, `"expense"`. Fixed vocabulary enforced at the DB level.
+- **Category as a separate entity**: avoids duplicating category names across transactions. Renaming a category updates it in one place.
+
+---
+
+## Local Setup
+
+### Requirements
+
+- Python 3.11+
+- PostgreSQL 18+
+- Git
+
+### Installation
+
+```bash
+# Clone the repository
+git clone https://github.com/Lchurrasqui/finance-tracker.git
+cd finance-tracker/backend
+
+# Create and activate virtual environment
+python -m venv venv
+source venv/Scripts/activate  # Windows (Git Bash)
+source venv/bin/activate       # Mac / Linux
+
+# Install dependencies
+pip install -r requirements.txt
+```
+
+### Environment variables
+
+Create a `.env` file inside `backend/` with the following:
+
+```
+DATABASE_URL=postgresql://postgres:your_password@localhost:5432/finance_tracker
+SECRET_KEY=your_secret_key
+```
+
+### Database
+
+```bash
+# Create the database in PostgreSQL
+CREATE DATABASE finance_tracker;
+
+# Run migrations (once Alembic is configured)
+alembic upgrade head
+```
+
+### Run the server
+
+```bash
+cd backend
+uvicorn app.main:app --reload
+```
+
+API available at: `http://localhost:8000`
+Interactive docs: `http://localhost:8000/docs`
+
+---
+
+## API Endpoints
+
+> Full documentation available at `/docs` (Swagger UI) when running locally.
+
+| Method | Route | Description | Auth required |
+|---|---|---|---|
+| GET | /health | Health check | No |
+
+*More endpoints to be added as development progresses.*
+
+---
+
+## Project Status
+
+| Phase | Status |
+|---|---|
+| Git & GitHub setup | ✅ Complete |
+| Project structure & environment | ✅ Complete |
+| FastAPI + DB connection | ✅ Complete |
+| Entity design & migrations | 🔄 In progress |
+| CRUD endpoints | ⏳ Pending |
+| JWT Authentication | ⏳ Pending |
+| Frontend (React) | ⏳ Pending |
+| Docker & Deploy | ⏳ Pending |
+
 
 1. Definición del Problema y Solución
 
@@ -42,63 +196,3 @@ RF2: El sistema debe validar que no se ingresen montos negativos.
 
 RF3: El sistema debe permitir crear categorías personalizadas (ej: "Suscripciones", "UTN").
 
-5. Entidades (Modelo de Datos)
-
-User
------
-id
-email
-password_hash
-created_at
-Account
--------
-id
-user_id
-name
-Category
---------
-id
-user_id
-name
-description
-Transaction
------------
-id
-account_id
-category_id
-amount
-type
-description
-date
-
-Relaciones:
-
-User 1:N Account
-User 1:N Category
-
-Account 1:N Transaction
-Category 1:N Transaction
-
-## 2. Características actualizadas
-- Registro de usuarios y autenticación básica.
-- Gestión de gastos con descripción, monto y categorización.
-- [En desarrollo] Integración con base de datos relacional.
-- [Proyección] Interfaz de usuario (Web/Desktop) y visualización de reportes.
-
-## 3. Arquitectura y Diseño de Datos
-El sistema sigue un modelo relacional para garantizar la integridad de la información. A continuación se presenta el Diagrama Entidad-Relación (DER) que rige la base de datos:
-
-![Diagrama Entidad Relación](./docs/der_finanzas.png)
-
-### Entidades Principales:
-* **Usuario:** Almacena la información de perfil y credenciales.
-* **Gasto:** Registra cada transacción financiera vinculada a un usuario.
-* **Categoría:** Clasificación para organizar los movimientos (Vivienda, Educación, Ocio, etc.).
-
-## 4. Tecnologías Utilizadas
-* **Lenguaje:** Python 3.x
-* **Base de Datos:** SQLite (en implementación)
-* **Gestión de Versiones:** Git & GitHub
-
-## 5. Instalación y Ejecución
-Para clonar y ejecutar este proyecto localmente:
