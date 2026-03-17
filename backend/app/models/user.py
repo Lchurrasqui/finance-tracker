@@ -12,3 +12,4 @@ class User(Base):
     created_at: Mapped[datetime] = mapped_column(server_default=func.now())
 
     accounts = relationship("Account", back_populates="user", cascade="all, delete-orphan")
+    categories = relationship("Category", back_populates="user", cascade="all, delete-orphan")
