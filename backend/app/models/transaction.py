@@ -21,8 +21,8 @@ class Transaction(Base):
     date: Mapped[datetime] = mapped_column(nullable=False, server_default=func.now())
     
     
-    account_id: Mapped[int] = mapped_column(ForeignKey("accounts.id", ondelete="CASCADE"))
-    category_id: Mapped[int] = mapped_column(ForeignKey("categories.id", ondelete="CASCADE"))
+    account_id: Mapped[int] = mapped_column(ForeignKey("accounts.id", ondelete="CASCADE"), nullable=False)
+    category_id: Mapped[int] = mapped_column(ForeignKey("categories.id", ondelete="CASCADE"), nullable=False)
     
-    account = relationship("Account", back_populates="transactions")
+    account = relationship("Account", back_populates="transactions", cascade="all, delete-orphan")
     category = relationship("Category", back_populates="transactions")

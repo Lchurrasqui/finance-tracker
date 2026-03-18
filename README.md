@@ -42,6 +42,7 @@ Each layer has a single responsibility and only communicates with the adjacent l
 
 > DER — pending (to be added after entity design session)
 
+
 ### Entities
 
 **User**
